@@ -487,7 +487,7 @@ input,select,textarea{border-radius:11px}
  <section class="page" id="settings">
   <div class="grid two">
    <div class="card"><h2 style="margin-top:0">Appearance</h2><p class="muted">Choose the look that feels comfortable on your tablet.</p><button class="btn" id="lightChoice">☀ Light mode</button> <button class="btn" id="darkChoice">☾ Dark mode</button></div>
-   <div class="card"><h2 style="margin-top:0">Your data</h2><p class="muted">Your planner saves automatically in this browser on this device. Export a backup regularly.</p><div class="toolbar"><button class="btn primary" id="exportBtn">↓ Export backup</button><label class="btn" for="importFile">↑ Import backup</label><input id="importFile" type="file" accept=".json,application/json" hidden></div><button class="btn danger" id="clearBtn">Clear all planner data</button><div class="storage-panel"><div class="storage-panel-head"><strong>Storage health</strong><button class="btn" type="button" id="checkStorageBtn">Check again</button></div><div id="storageStatus" class="storage-status">Checking browser storage…</div><div id="storageDetails" class="muted storage-details">Storage is kept separately for each website origin and browser profile.</div></div></div>
+   <div class="card"><h2 style="margin-top:0">Your data</h2><p class="muted">Your planner saves automatically in this browser on this device. Wait for “Saved and verified” before refreshing. Export a backup regularly.</p><div class="toolbar"><button class="btn primary" id="exportBtn">↓ Export backup</button><label class="btn" for="importFile">↑ Import backup</label><input id="importFile" type="file" accept=".json,application/json" hidden></div><button class="btn danger" id="clearBtn">Clear all planner data</button><div class="storage-panel"><div class="storage-panel-head"><strong>Storage health</strong><button class="btn" type="button" id="checkStorageBtn">Check again</button></div><div id="storageStatus" class="storage-status">Checking browser storage…</div><div id="storageDetails" class="muted storage-details">Storage is kept separately for each website origin and browser profile.</div></div></div>
   </div>
   <div class="card" style="margin-top:15px"><h2 style="margin-top:0">Using your planner</h2><ul class="muted"><li>Use Quick add to create tasks, events, projects, goals, notes, budget allocations, transactions, accounts and loans.</li><li>Use Calendar for dated events and Tasks for actions you need to complete.</li><li>Planner records are stored in IndexedDB where supported. Export a backup before clearing browser data or changing devices. Budget allocations, transactions, accounts and loans are included. Loan repayments are calculated from their transaction history.</li><li>This is an offline-friendly single-file planner. New task and project entries wait for storage migration to finish before saving. It does not sync automatically between devices.</li><li>If embedded in Google Sites, keep using the same published embed URL, browser and device. Browser storage may be partitioned or restricted inside embedded pages. Export backups regularly; publishing a new URL or clearing site data may make the old local records unavailable.</li></ul></div>
  </section>
@@ -524,60 +524,117 @@ let data=load(), currentPage='dashboard', calendarDate=new Date(), editing=null,
 function load(){try{return JSON.parse(localStorage.getItem(STORE))||EMPTY_DATA()}catch(e){return EMPTY_DATA()}}
 const APP_DB='YearlyPlannerDocumentStore',APP_DB_VERSION=2;
 function appDB(){return new Promise((resolve,reject)=>{if(!('indexedDB' in window)){reject(new Error('IndexedDB unavailable'));return}const r=indexedDB.open(APP_DB,APP_DB_VERSION);r.onupgradeneeded=()=>{const db=r.result;if(!db.objectStoreNames.contains('files'))db.createObjectStore('files',{keyPath:'id'});if(!db.objectStoreNames.contains('appData'))db.createObjectStore('appData')};r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);r.onblocked=()=>reject(new Error('Database upgrade blocked'))})}
+const PLANNER_DB='YearlyPlannerCoreData';
+const PLANNER_DB_VERSION=1;
 let persistenceMode='starting',saveQueue=Promise.resolve(),storageReady=false,persistentStorageGranted=false;
+function plannerDB(){
+ return new Promise((resolve,reject)=>{
+  if(!window.indexedDB){reject(new Error('IndexedDB is unavailable in this browser context'));return}
+  const request=indexedDB.open(PLANNER_DB,PLANNER_DB_VERSION);
+  request.onupgradeneeded=()=>{const db=request.result;if(!db.objectStoreNames.contains('records'))db.createObjectStore('records')};
+  request.onsuccess=()=>resolve(request.result);
+  request.onerror=()=>reject(request.error||new Error('Could not open planner database'));
+  request.onblocked=()=>reject(new Error('Planner database is blocked by another open tab'));
+ });
+}
+async function readPlannerDB(){
+ const db=await plannerDB();
+ try{
+  return await new Promise((resolve,reject)=>{
+   const tx=db.transaction('records','readonly'),req=tx.objectStore('records').get('planner');
+   req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error);
+  });
+ }finally{db.close()}
+}
+async function writePlannerDB(snapshot){
+ const db=await plannerDB();
+ try{
+  await new Promise((resolve,reject)=>{
+   const tx=db.transaction('records','readwrite');
+   tx.objectStore('records').put(snapshot,'planner');
+   tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error||new Error('Planner save failed'));tx.onabort=()=>reject(tx.error||new Error('Planner save was aborted'));
+  });
+  const check=await new Promise((resolve,reject)=>{
+   const tx=db.transaction('records','readonly'),req=tx.objectStore('records').get('planner');
+   req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);
+  });
+  if(check!==snapshot)throw new Error('Save verification failed');
+ }finally{db.close()}
+}
 async function persistData(){
  const snapshot=JSON.stringify(data);
- let db=null;
  try{
-  db=await appDB();
-  await new Promise((resolve,reject)=>{
-   const tx=db.transaction('appData','readwrite');
-   tx.objectStore('appData').put(snapshot,'planner');
-   tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error||new Error('Write aborted'));
-  });
-  persistenceMode='IndexedDB';return true;
- }catch(err){
-  try{localStorage.setItem(STORE,snapshot);persistenceMode='LocalStorage fallback';return true}
-  catch(e){persistenceMode='unsaved';toast('Could not save. Export a backup immediately.');return false}
- }finally{if(db)try{db.close()}catch(e){}}
+  await writePlannerDB(snapshot);
+  persistenceMode='IndexedDB — verified';
+  return true;
+ }catch(idbError){
+  try{
+   localStorage.setItem(STORE,snapshot);
+   const check=localStorage.getItem(STORE);
+   if(check!==snapshot)throw new Error('LocalStorage verification failed');
+   persistenceMode='LocalStorage fallback — verified';
+   return true;
+  }catch(localError){
+   persistenceMode='UNSAVED';
+   console.error('Planner persistence failed',idbError,localError);
+   toast('SAVE FAILED — export your backup. See Settings → Storage Health.');
+   return false;
+  }
+ }
 }
-// Every save waits for the initial migration/load. This prevents a late startup
-// read from overwriting a task or project the user just entered.
 async function save(){
  if(window.plannerStorageReady)await window.plannerStorageReady;
  renderAll();
  saveQueue=saveQueue.then(()=>persistData());
  const ok=await saveQueue;
- if(ok)toast('Saved on this device');
+ updateStorageInfo();
+ if(ok)toast('Saved and verified on this device');
  return ok;
 }
 async function initialiseStorage(){
+ let dbData=null,source='new database';
+ try{dbData=await readPlannerDB()}catch(e){console.warn('New planner DB unavailable',e)}
+ if(!dbData){
+  // Migrate from the previous V5.x shared IndexedDB database.
+  try{
+   const oldDB=await appDB();
+   try{dbData=await new Promise((resolve,reject)=>{
+    if(!oldDB.objectStoreNames.contains('appData')){resolve(null);return}
+    const req=oldDB.transaction('appData','readonly').objectStore('appData').get('planner');
+    req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error);
+   })}finally{oldDB.close()}
+   if(dbData)source='previous V5 IndexedDB';
+  }catch(e){console.warn('Previous planner database unavailable',e)}
+ }
+ if(!dbData){
+  try{const legacy=localStorage.getItem(STORE);if(legacy){dbData=legacy;source='LocalStorage migration'}}catch(e){}
+ }
  try{
-  const db=await appDB();
-  const stored=await new Promise((resolve,reject)=>{const r=db.transaction('appData').objectStore('appData').get('planner');r.onsuccess=()=>resolve(r.result||null);r.onerror=()=>reject(r.error)});
-  if(stored){const parsed=JSON.parse(stored);data={...EMPTY_DATA(),...parsed}}
-  else{
-   // Migrate the existing V1 LocalStorage planner without discarding it.
+  if(dbData){
+   const parsed=typeof dbData==='string'?JSON.parse(dbData):dbData;
+   data={...EMPTY_DATA(),...parsed};
+  }
+  // Persist the migrated/current state to the new isolated database.
+  await writePlannerDB(JSON.stringify(data));
+  persistenceMode='IndexedDB — verified';
+  try{if(navigator.storage?.persist)persistentStorageGranted=await navigator.storage.persist()}catch(e){}
+ }catch(err){
+  console.error('Planner startup storage error',err);
+  try{
    const legacy=localStorage.getItem(STORE);
    if(legacy){const parsed=JSON.parse(legacy);data={...EMPTY_DATA(),...parsed}}
-   const snapshot=JSON.stringify(data);
-   await new Promise((resolve,reject)=>{const tx=db.transaction('appData','readwrite');tx.objectStore('appData').put(snapshot,'planner');tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});
-   // Only remove the bulky old copy after the IndexedDB migration has committed.
-   try{localStorage.removeItem(STORE)}catch(e){}
-  }
-  db.close();persistenceMode='IndexedDB';storageReady=true;
-  try{if(navigator.storage?.persist)persistentStorageGranted=await navigator.storage.persist()}catch(e){}
-  renderAll();updateStorageInfo();toast('Planner data loaded');
- }catch(err){
-  persistenceMode='LocalStorage fallback';storageReady=true;renderAll();updateStorageInfo();
-  toast('Using browser storage fallback. Export a backup.');
+   persistenceMode='LocalStorage fallback';
+  }catch(e){persistenceMode='UNAVAILABLE'}
  }
+ storageReady=true;
+ renderAll();updateStorageInfo();
+ toast('Planner ready · '+source);
 }
 async function updateStorageInfo(){
  const status=$('#storageStatus'),details=$('#storageDetails');if(!status||!details)return;
  let mode=persistenceMode==='IndexedDB'?'IndexedDB (recommended)':persistenceMode;
- status.textContent='Save method: '+mode;
- let lines=['Website origin: '+location.origin];
+ status.textContent='Save method: '+mode; if(persistenceMode==='UNSAVED'||persistenceMode==='UNAVAILABLE')status.style.color='#b43b2f';else status.style.color='';
+ let lines=['Website origin: '+location.origin,'Storage state: '+(storageReady?'ready':'loading'),'Tasks: '+(data.tasks?.length||0)+' · Projects: '+(data.projects?.length||0)];
  try{
   if(navigator.storage?.estimate){
    const e=await navigator.storage.estimate();
@@ -652,7 +709,7 @@ function syncTransactionFields(){
  if(accountLabel)accountLabel.textContent=type==='Transfer'?'From account':type==='Loan repayment'?'Payment account':'Account';
 }
 $('#entryForm').addEventListener('change',e=>{if(e.target.name==='transactionType')syncTransactionFields()});
-$('#entryForm').addEventListener('submit',e=>{
+$('#entryForm').addEventListener('submit',async e=>{
  e.preventDefault();let obj=Object.fromEntries(new FormData(e.target).entries());
  if(['transaction','account','loan','expense'].includes(formType)&&!String(obj.title||'').trim()){toast('Please enter a name or description');$('#formFields [name=title]')?.focus();return}
  if(formType==='transaction'){
@@ -683,7 +740,7 @@ $('#entryForm').addEventListener('submit',e=>{
   if(!previous)obj.statusHistory.push({from:'',to:newStatus,at:now});
  }
  if(idx>=0)arr[idx]=obj;else arr.push(obj);
- closeForm();save();toast('Saved successfully');
+ const saved=await save();if(!saved){alert('Your entry could not be saved. Do not refresh or close this page. Export your backup and check Storage Health.');return}closeForm();
 });
 $$('[data-add]').forEach(b=>b.addEventListener('click',()=>openForm(b.dataset.add)));
 $('#quickAdd').onclick=showQuickAdd;
@@ -886,7 +943,7 @@ $('#taskSearch').addEventListener('input',renderTasks);$('#taskFilter').addEvent
 $('#prevMonth').onclick=()=>{calendarDate.setMonth(calendarDate.getMonth()-1);renderCalendar()};$('#nextMonth').onclick=()=>{calendarDate.setMonth(calendarDate.getMonth()+1);renderCalendar()};
 let yr=$('#overviewYear');for(let y=new Date().getFullYear()-2;y<=new Date().getFullYear()+5;y++)yr.add(new Option(y,y));yr.value=new Date().getFullYear();yr.onchange=renderDashboard;
 $('#themeBtn').onclick=()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');$('#lightChoice').onclick=()=>setTheme('light');$('#darkChoice').onclick=()=>setTheme('dark');$('#checkStorageBtn').onclick=updateStorageInfo;
-$('#exportBtn').onclick=()=>{let blob=new Blob([JSON.stringify({version:5.1,exported:new Date().toISOString(),data},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='yearly-planner-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href);toast('Backup exported')};
+$('#exportBtn').onclick=()=>{let blob=new Blob([JSON.stringify({version:5.5,exported:new Date().toISOString(),data},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='yearly-planner-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href);toast('Backup exported')};
 $('#importFile').onchange=async e=>{
  const file=e.target.files?.[0];if(!file)return;
  const keys=['tasks','events','projects','goals','notes','priorities','expenses','transactions','accounts','loans'];
