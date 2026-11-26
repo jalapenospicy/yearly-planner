@@ -1094,9 +1094,9 @@ async function renderDocuments(){
 }
 window.downloadPlannerFile=async id=>{const db=await fileDB(),r=await new Promise(resolve=>{let q=db.transaction('files').objectStore('files').get(id);q.onsuccess=()=>resolve(q.result)});if(r){let a=document.createElement('a');a.href=URL.createObjectURL(r.blob);a.download=r.name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}};
 window.deletePlannerFile=async id=>{if(!confirm('Delete this document?'))return;const db=await fileDB(),tx=db.transaction('files','readwrite');tx.objectStore('files').delete(id);tx.oncomplete=renderDocuments};
-$('#docUpload').addEventListener('change',async e=>{const db=await fileDB();for(const f of e.target.files){const rec={id:uid(),name:f.name,size:f.size,type:f.type,blob:f};db.transaction('files','readwrite').objectStore('files').put(rec)}e.target.value='';setTimeout(()=>{renderDocuments();toast('Documents saved')},250)});
+/* Legacy document upload handler disabled because the Documents UI was removed. */
 $('#budgetPeriod').addEventListener('change',()=>{let custom=$('#budgetPeriod').value==='custom';$('#budgetFrom').hidden=!custom;$('#budgetTo').hidden=!custom;renderBudget()});$('#budgetFrom').addEventListener('change',renderBudget);$('#budgetTo').addEventListener('change',renderBudget);
-$('#docSearch').addEventListener('input',renderDocuments);$('#docView').addEventListener('change',renderDocuments);$('#quarterSelect').addEventListener('change',renderPlanning);
+/* Documents section removed from the interface; legacy document data is left untouched. */$('#quarterSelect').addEventListener('change',renderPlanning);
 $('#csvExport').onclick=()=>{const rows=[['Type','Title','Date','Status','Priority'],...data.tasks.map(x=>['Task',x.title,x.date,x.status,x.priority]),...data.events.map(x=>['Event',x.title,x.date,'',''])];const csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='yearly-planner-report.csv';a.click();URL.revokeObjectURL(a.href)};
 
 function renderAll(){renderDashboard();renderTasks();renderProjects();renderGoals();renderNotes();renderCalendar();renderPlanning();renderBudget();renderReports()}
