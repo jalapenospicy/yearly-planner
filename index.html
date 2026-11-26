@@ -1159,7 +1159,7 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
 import {
-  getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
+  getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
 import {
   getFirestore, doc, getDoc, setDoc, serverTimestamp
@@ -1245,13 +1245,32 @@ window.firebaseCloudSave = async (snapshot) => {
 async function signIn() {
   try {
     setCloudStatus("Opening Google sign-in…");
+    // Mobile browsers (including Opera on Android) commonly block or interrupt
+    // Firebase popups. Use the full-page redirect flow on mobile instead.
+    const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+    if (isMobile) {
+      await signInWithRedirect(auth, provider);
+      return;
+    }
     await signInWithPopup(auth, provider);
   } catch (error) {
     console.error("Google sign-in error:", error);
+    if (error?.code === "auth/popup-blocked" || error?.code === "auth/cancelled-popup-request") {
+      try {
+        setCloudStatus("Switching to secure sign-in redirect…");
+        await signInWithRedirect(auth, provider);
+        return;
+      } catch (redirectError) {
+        console.error("Google redirect sign-in error:", redirectError);
+        error = redirectError;
+      }
+    }
     const message = error?.code === "auth/unauthorized-domain"
-      ? "This website domain is not authorised in Firebase Authentication."
-      : error?.code === "auth/popup-blocked"
-      ? "Popup blocked. Allow pop-ups or open the planner directly in its own tab."
+      ? "This website domain is not authorised in Firebase Authentication. In Firebase Console → Authentication → Settings → Authorized domains, add jalapenospicy.github.io."
+      : error?.code === "auth/operation-not-allowed"
+      ? "Google sign-in is not enabled. Enable Google under Firebase Console → Authentication → Sign-in method."
+      : error?.code === "auth/network-request-failed"
+      ? "Network request failed. Check your internet connection, disable content blocking for this site, and try again."
       : error?.message || "Google sign-in failed.";
     setCloudStatus("Sign-in failed", "error");
     alert(message);
@@ -1295,6 +1314,15 @@ cloudBtn?.addEventListener("click", async () => {
   } else {
     await signIn();
   }
+});
+
+getRedirectResult(auth).catch(error => {
+  console.error("Google redirect result error:", error);
+  setCloudStatus("Sign-in failed", "error");
+  const message = error?.code === "auth/unauthorized-domain"
+    ? "This website domain is not authorised in Firebase Authentication. Add jalapenospicy.github.io under Authentication → Settings → Authorized domains."
+    : error?.message || "Google sign-in could not be completed.";
+  alert(message);
 });
 
 onAuthStateChanged(auth, async user => {
