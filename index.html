@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#355844">
-<title>Yearly Planner — Version 4</title>
+<title>Yearly Planner — V6 Cloud Sync</title>
 <style>
 :root{
  --bg:#f4f1e8;--surface:#fffdf7;--surface2:#ebe6d8;--text:#26382d;--muted:#718074;
@@ -313,6 +313,14 @@ input,select,textarea{border-radius:11px}
 .storage-status{font-size:11px;font-weight:800;color:var(--green);margin-top:9px}
 .storage-details{font-size:10px;line-height:1.6;margin-top:5px;overflow-wrap:anywhere}
 
+
+/* V6 Firebase cloud account */
+.cloud-account{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.cloud-status{font-size:10px;color:var(--muted);font-weight:700;max-width:190px}
+.cloud-status.ok{color:#4f8b5c}.cloud-status.error{color:var(--danger)}
+#cloudBtn{white-space:nowrap}
+@media(max-width:650px){.cloud-account{justify-content:flex-end}.cloud-status{max-width:120px}}
+
 </style>
 </head>
 <body>
@@ -337,7 +345,7 @@ input,select,textarea{border-radius:11px}
 <main>
  <header class="topbar">
   <div><h1 id="pageTitle">Your year at a glance</h1><div class="subtitle" id="pageSubtitle">A calm space to plan, focus and follow through.</div></div>
-  <div class="actions"><button class="btn" id="themeBtn">☾ Dark</button><button class="btn primary" id="quickAdd">＋ Quick add</button></div>
+  <div class="actions"><div class="cloud-account"><span id="cloudStatus" class="cloud-status">Cloud: signed out</span><button class="btn" id="cloudBtn" type="button">Sign in with Google</button></div><button class="btn" id="themeBtn">☾ Dark</button><button class="btn primary" id="quickAdd">＋ Quick add</button></div>
  </header>
 
  <section class="page active" id="dashboard">
@@ -487,9 +495,9 @@ input,select,textarea{border-radius:11px}
  <section class="page" id="settings">
   <div class="grid two">
    <div class="card"><h2 style="margin-top:0">Appearance</h2><p class="muted">Choose the look that feels comfortable on your tablet.</p><button class="btn" id="lightChoice">☀ Light mode</button> <button class="btn" id="darkChoice">☾ Dark mode</button></div>
-   <div class="card"><h2 style="margin-top:0">Your data</h2><p class="muted">Your planner saves automatically in this browser on this device. Wait for “Saved and verified” before refreshing. Export a backup regularly.</p><div class="toolbar"><button class="btn primary" id="exportBtn">↓ Export backup</button><label class="btn" for="importFile">↑ Import backup</label><input id="importFile" type="file" accept=".json,application/json" hidden></div><button class="btn danger" id="clearBtn">Clear all planner data</button><div class="storage-panel"><div class="storage-panel-head"><strong>Storage health</strong><button class="btn" type="button" id="checkStorageBtn">Check again</button></div><div id="storageStatus" class="storage-status">Checking browser storage…</div><div id="storageDetails" class="muted storage-details">Storage is kept separately for each website origin and browser profile.</div></div></div>
+   <div class="card"><h2 style="margin-top:0">Your data</h2><p class="muted">Your planner saves locally on this device and, after Google sign-in, synchronises planner records to your private Firebase account. Wait for the save/sync confirmation before refreshing. Export a backup regularly.</p><div class="toolbar"><button class="btn primary" id="exportBtn">↓ Export backup</button><label class="btn" for="importFile">↑ Import backup</label><input id="importFile" type="file" accept=".json,application/json" hidden></div><button class="btn danger" id="clearBtn">Clear all planner data</button><div class="storage-panel"><div class="storage-panel-head"><strong>Storage health</strong><button class="btn" type="button" id="checkStorageBtn">Check again</button></div><div id="storageStatus" class="storage-status">Checking browser storage…</div><div id="storageDetails" class="muted storage-details">Storage is kept separately for each website origin and browser profile.</div></div></div>
   </div>
-  <div class="card" style="margin-top:15px"><h2 style="margin-top:0">Using your planner</h2><ul class="muted"><li>Use Quick add to create tasks, events, projects, goals, notes, budget allocations, transactions, accounts and loans.</li><li>Use Calendar for dated events and Tasks for actions you need to complete.</li><li>Planner records are stored in IndexedDB where supported. Export a backup before clearing browser data or changing devices. Budget allocations, transactions, accounts and loans are included. Loan repayments are calculated from their transaction history.</li><li>This is an offline-friendly single-file planner. New task and project entries wait for storage migration to finish before saving. It does not sync automatically between devices.</li><li>If embedded in Google Sites, keep using the same published embed URL, browser and device. Browser storage may be partitioned or restricted inside embedded pages. Export backups regularly; publishing a new URL or clearing site data may make the old local records unavailable.</li></ul></div>
+  <div class="card" style="margin-top:15px"><h2 style="margin-top:0">Using your planner</h2><ul class="muted"><li>Use Quick add to create tasks, events, projects, goals, notes, budget allocations, transactions, accounts and loans.</li><li>Use Calendar for dated events and Tasks for actions you need to complete.</li><li>Planner records are stored in IndexedDB where supported. Export a backup before clearing browser data or changing devices. Budget allocations, transactions, accounts and loans are included. Loan repayments are calculated from their transaction history.</li><li>This is an offline-friendly single-file planner. Local records remain available on this device; when signed in, planner records synchronise to your private Firebase account. Uploaded document files remain on this device and are not included in cloud sync.</li><li>If embedded in Google Sites, keep using the same published embed URL, browser and device. Browser storage may be partitioned or restricted inside embedded pages. Export backups regularly; publishing a new URL or clearing site data may make the old local records unavailable.</li></ul></div>
  </section>
 </main>
 </div>
@@ -566,6 +574,9 @@ async function persistData(){
  try{
   await writePlannerDB(snapshot);
   persistenceMode='IndexedDB — verified';
+  if(window.firebaseCloudSave && window.firebaseCloudUser){
+   try{await window.firebaseCloudSave(snapshot)}catch(cloudError){console.error('Firebase cloud sync failed',cloudError);window.firebaseCloudSetStatus?.('Cloud sync failed — local copy saved','error')}
+  }
   return true;
  }catch(idbError){
   try{
@@ -573,6 +584,9 @@ async function persistData(){
    const check=localStorage.getItem(STORE);
    if(check!==snapshot)throw new Error('LocalStorage verification failed');
    persistenceMode='LocalStorage fallback — verified';
+   if(window.firebaseCloudSave && window.firebaseCloudUser){
+    try{await window.firebaseCloudSave(snapshot)}catch(cloudError){console.error('Firebase cloud sync failed',cloudError);window.firebaseCloudSetStatus?.('Cloud sync failed — local copy saved','error')}
+   }
    return true;
   }catch(localError){
    persistenceMode='UNSAVED';
@@ -646,7 +660,7 @@ async function updateStorageInfo(){
    lines.push('Protected from automatic browser cleanup: '+(persisted?'Yes':'Not granted'));
   }
  }catch(e){lines.push('Storage quota details are unavailable in this browser context.')}
- lines.push('Data belongs to this browser, device and embedded website origin; it does not sync to other devices.');
+ lines.push('Local data belongs to this browser and website origin. Sign in with Google to sync planner records through your private Firebase account. Document attachments remain local.');
  details.textContent=lines.join(' · ');
 }
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
@@ -974,6 +988,162 @@ $('#importFile').onchange=async e=>{
 $('#clearBtn').onclick=()=>{if(confirm('This permanently clears all planner data stored in this browser. Export a backup first if you may need it. Continue?')){data={tasks:[],events:[],projects:[],goals:[],notes:[],priorities:[],expenses:[],transactions:[],accounts:[],loans:[]};save();toast('Planner data cleared')}};
 setTheme(localStorage.getItem('ypTheme')||'light');renderAll();window.plannerStorageReady=initialiseStorage();
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')updateStorageInfo()});
+
+// V6 bridge: Firebase module uses these methods without changing planner internals.
+window.__yearlyPlannerBridge = {
+ getData:()=>data,
+ replaceData:async incoming=>{
+  const next={...EMPTY_DATA(),...(incoming||{})};
+  ['tasks','events','projects','goals','notes','priorities','expenses','transactions','accounts','loans'].forEach(k=>{if(!Array.isArray(next[k]))next[k]=[]});
+  data=next;
+  renderAll();
+  const ok=await persistData();
+  updateStorageInfo();
+  return ok;
+ },
+ refresh:()=>renderAll(),
+ exportBackup:()=>$('#exportBtn')?.click()
+};
+
 </script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+import {
+  getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+import {
+  getFirestore, doc, getDoc, setDoc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDXeVjBDadCdPLmZ63FF7FgOdv93Z5rXUI",
+  authDomain: "yearlyplanner-jules.firebaseapp.com",
+  projectId: "yearlyplanner-jules",
+  storageBucket: "yearlyplanner-jules.firebasestorage.app",
+  messagingSenderId: "1065282524438",
+  appId: "1:1065282524438:web:fb7428d51719d33fc8ac37",
+  measurementId: "G-L5T6S98SVM"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
+provider.setCustomParameters({ prompt: "select_account" });
+
+const cloudBtn = document.getElementById("cloudBtn");
+const cloudStatus = document.getElementById("cloudStatus");
+let currentUser = null;
+let cloudWriteQueue = Promise.resolve();
+
+function setCloudStatus(message, kind = "") {
+  if (!cloudStatus) return;
+  cloudStatus.textContent = message;
+  cloudStatus.className = "cloud-status" + (kind ? " " + kind : "");
+}
+window.firebaseCloudSetStatus = setCloudStatus;
+window.firebaseCloudUser = null;
+
+function plannerDoc(uid) {
+  return doc(db, "users", uid, "planner", "main");
+}
+
+function mergeCollections(localData, cloudData) {
+  const keys = ["tasks","events","projects","goals","notes","priorities","expenses","transactions","accounts","loans"];
+  const merged = {...(cloudData || {})};
+  for (const key of keys) {
+    const cloudItems = Array.isArray(cloudData?.[key]) ? cloudData[key] : [];
+    const localItems = Array.isArray(localData?.[key]) ? localData[key] : [];
+    const byId = new Map();
+    // Local entries are added first; cloud versions win when IDs match.
+    for (const item of localItems) byId.set(item.id || JSON.stringify(item), item);
+    for (const item of cloudItems) byId.set(item.id || JSON.stringify(item), item);
+    merged[key] = [...byId.values()];
+  }
+  return merged;
+}
+
+window.firebaseCloudSave = async (snapshot) => {
+  if (!currentUser) return;
+  const payload = JSON.parse(snapshot);
+  cloudWriteQueue = cloudWriteQueue.then(async () => {
+    await setDoc(plannerDoc(currentUser.uid), {
+      data: payload,
+      schemaVersion: 1,
+      updatedAt: serverTimestamp()
+    });
+    setCloudStatus("Cloud synced · " + new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}), "ok");
+  });
+  return cloudWriteQueue;
+};
+
+async function signIn() {
+  try {
+    setCloudStatus("Opening Google sign-in…");
+    await signInWithPopup(auth, provider);
+  } catch (error) {
+    console.error("Google sign-in error:", error);
+    const message = error?.code === "auth/unauthorized-domain"
+      ? "This website domain is not authorised in Firebase Authentication."
+      : error?.code === "auth/popup-blocked"
+      ? "Popup blocked. Allow pop-ups or open the planner directly in its own tab."
+      : error?.message || "Google sign-in failed.";
+    setCloudStatus("Sign-in failed", "error");
+    alert(message);
+  }
+}
+
+async function handleSignedIn(user) {
+  currentUser = user;
+  window.firebaseCloudUser = user;
+  cloudBtn.textContent = "Sign out";
+  cloudBtn.title = user.email || user.displayName || "Signed in";
+  setCloudStatus("Connecting private cloud…");
+  try {
+    // Wait for the planner's local IndexedDB migration before reconciling data.
+    if (window.plannerStorageReady) await window.plannerStorageReady;
+    const ref = plannerDoc(user.uid);
+    const snap = await getDoc(ref);
+    const localData = window.__yearlyPlannerBridge?.getData() || {};
+    if (snap.exists() && snap.data()?.data) {
+      const reconciled = mergeCollections(localData, snap.data().data);
+      const saved = await window.__yearlyPlannerBridge.replaceData(reconciled);
+      if (!saved) throw new Error("Could not save the merged planner data locally.");
+      setCloudStatus("Connected · cloud data loaded", "ok");
+    } else {
+      const initial = JSON.stringify(localData);
+      await window.firebaseCloudSave(initial);
+      setCloudStatus("Connected · first cloud backup created", "ok");
+    }
+  } catch (error) {
+    console.error("Firebase initial sync error:", error);
+    setCloudStatus("Cloud connection error", "error");
+    alert("Google sign-in worked, but the planner could not access Firestore. Check that Firestore rules are published and allow only your signed-in UID. Details: " + (error?.message || error));
+  }
+}
+
+cloudBtn?.addEventListener("click", async () => {
+  if (currentUser) {
+    try { await signOut(auth); }
+    catch (error) { console.error(error); alert("Could not sign out: " + (error?.message || error)); }
+  } else {
+    await signIn();
+  }
+});
+
+onAuthStateChanged(auth, async user => {
+  if (user) {
+    await handleSignedIn(user);
+  } else {
+    currentUser = null;
+    window.firebaseCloudUser = null;
+    cloudBtn.textContent = "Sign in with Google";
+    cloudBtn.title = "Sign in to synchronise planner records privately";
+    setCloudStatus("Cloud: signed out");
+  }
+});
+</script>
+
 </body>
 </html>
