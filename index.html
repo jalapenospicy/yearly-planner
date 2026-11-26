@@ -986,10 +986,9 @@ $('#importFile').onchange=async e=>{
  }finally{e.target.value=''}
 };
 $('#clearBtn').onclick=()=>{if(confirm('This permanently clears all planner data stored in this browser. Export a backup first if you may need it. Continue?')){data={tasks:[],events:[],projects:[],goals:[],notes:[],priorities:[],expenses:[],transactions:[],accounts:[],loans:[]};save();toast('Planner data cleared')}};
-setTheme(localStorage.getItem('ypTheme')||'light');renderAll();window.plannerStorageReady=initialiseStorage();
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')updateStorageInfo()});
-
-// V6 bridge: Firebase module uses these methods without changing planner internals.
+// V6.2 bridge: expose the local planner API before UI startup.
+// This ensures the Firebase module can still reach storage even if a later
+// rendering/startup step encounters a browser-specific issue.
 window.__yearlyPlannerBridge = {
  getData:()=>data,
  replaceData:async incoming=>{
@@ -1004,6 +1003,9 @@ window.__yearlyPlannerBridge = {
  refresh:()=>renderAll(),
  exportBackup:()=>$('#exportBtn')?.click()
 };
+
+setTheme(localStorage.getItem('ypTheme')||'light');renderAll();window.plannerStorageReady=initialiseStorage();
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')updateStorageInfo()});
 
 </script>
 
@@ -1057,7 +1059,7 @@ async function waitForPlannerBridge(timeoutMs = 10000) {
          typeof window.__yearlyPlannerBridge.getData !== "function" ||
          typeof window.__yearlyPlannerBridge.replaceData !== "function") {
     if (Date.now() - started > timeoutMs) {
-      throw new Error("Planner storage bridge did not initialise. Please refresh the page; if this continues, the deployed HTML may be an older or incomplete version.");
+      throw new Error("Planner storage bridge is unavailable. The local planner script may have stopped during startup. Open the browser console for the first JavaScript error, then share it with me.");
     }
     await new Promise(resolve => setTimeout(resolve, 100));
   }
