@@ -1049,6 +1049,21 @@ function plannerDoc(uid) {
   return doc(db, "users", uid, "planner", "main");
 }
 
+// The planner UI is loaded by a classic script while Firebase uses a module.
+// Wait for the local planner bridge to become available before starting sync.
+async function waitForPlannerBridge(timeoutMs = 10000) {
+  const started = Date.now();
+  while (!window.__yearlyPlannerBridge ||
+         typeof window.__yearlyPlannerBridge.getData !== "function" ||
+         typeof window.__yearlyPlannerBridge.replaceData !== "function") {
+    if (Date.now() - started > timeoutMs) {
+      throw new Error("Planner storage bridge did not initialise. Please refresh the page; if this continues, the deployed HTML may be an older or incomplete version.");
+    }
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
+  return window.__yearlyPlannerBridge;
+}
+
 function mergeCollections(localData, cloudData) {
   const keys = ["tasks","events","projects","goals","notes","priorities","expenses","transactions","accounts","loans"];
   const merged = {...(cloudData || {})};
@@ -1103,12 +1118,13 @@ async function handleSignedIn(user) {
   try {
     // Wait for the planner's local IndexedDB migration before reconciling data.
     if (window.plannerStorageReady) await window.plannerStorageReady;
+    const bridge = await waitForPlannerBridge();
     const ref = plannerDoc(user.uid);
     const snap = await getDoc(ref);
-    const localData = window.__yearlyPlannerBridge?.getData() || {};
+    const localData = bridge.getData() || {};
     if (snap.exists() && snap.data()?.data) {
       const reconciled = mergeCollections(localData, snap.data().data);
-      const saved = await window.__yearlyPlannerBridge.replaceData(reconciled);
+      const saved = await bridge.replaceData(reconciled);
       if (!saved) throw new Error("Could not save the merged planner data locally.");
       setCloudStatus("Connected · cloud data loaded", "ok");
     } else {
