@@ -131,6 +131,7 @@ main{padding:27px clamp(18px,3.2vw,48px) 48px;max-width:1720px;width:100%;margin
 .dashboard-section-title h2{font-family:Georgia,serif;font-size:23px;font-weight:500;letter-spacing:-.5px;margin:4px 0 0}
 .year-select{width:auto;min-width:105px;background:var(--surface);font-size:12px}
 .v3-stats{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:27px}
+.overview-link{cursor:pointer;transition:transform .18s,box-shadow .18s}.overview-link:hover,.overview-link:focus-visible{transform:translateY(-3px);box-shadow:0 12px 28px rgba(42,62,46,.14);outline:2px solid var(--green2);outline-offset:2px}
 .stat-card{position:relative;overflow:hidden;border-radius:17px;padding:17px 18px;min-height:137px;border:1px solid transparent}
 .stat-forest{background:#294b3a;color:#f4f2e8}.stat-sage{background:#dce6d7;color:#344b38}.stat-clay{background:#eaded1;color:#694c3b}.stat-linen{background:#eeeade;color:#4e594b}
 [data-theme="dark"] .stat-sage{background:#344a39;color:#e9f0e5}[data-theme="dark"] .stat-clay{background:#514033;color:#f0dfd0}[data-theme="dark"] .stat-linen{background:#3d4438;color:#e8ebdf}
@@ -144,7 +145,7 @@ main{padding:27px clamp(18px,3.2vw,48px) 48px;max-width:1720px;width:100%;margin
 .panel-heading h2{font-size:21px;margin:4px 0 0}
 .heading-caption{font-size:10px;color:var(--muted)}
 .v3-month-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
-.v3-month-grid .month{min-height:90px;border-radius:15px;padding:13px 14px;background:var(--surface);transition:transform .2s,border-color .2s;position:relative;overflow:hidden}
+.v3-month-grid .month{width:100%;text-align:left;color:var(--text);font:inherit;cursor:pointer;min-height:90px;border-radius:15px;padding:13px 14px;background:var(--surface);transition:transform .2s,border-color .2s;position:relative;overflow:hidden}
 .v3-month-grid .month:hover{transform:translateY(-2px);border-color:var(--green2)}
 .v3-month-grid .month strong{font-family:Georgia,serif;font-size:15px;font-weight:500;margin-bottom:10px}
 .v3-month-grid .month small{font-size:10px;color:var(--muted);margin:4px 0}
@@ -321,6 +322,51 @@ input,select,textarea{border-radius:11px}
 #cloudBtn{white-space:nowrap}
 @media(max-width:650px){.cloud-account{justify-content:flex-end}.cloud-status{max-width:120px}}
 
+
+/* V7 interaction and visual refresh */
+.overview-link{cursor:pointer}
+.myday-overview{margin-top:16px}
+.task-status-buttons{display:flex;flex-wrap:wrap;gap:5px;max-width:310px}
+.status-pill{border:1px solid var(--border);background:var(--surface2);color:var(--text);border-radius:999px;padding:5px 9px;font-size:10px;cursor:pointer}
+.status-pill.selected{background:var(--green2);color:#fff;border-color:var(--green2)}
+.task-comment-btn{margin-top:8px;font-size:11px;padding:6px 9px}
+.task-latest-comment{margin-top:7px;padding:8px;background:var(--surface2);border-radius:10px;font-size:12px;max-width:340px}
+.task-latest-comment small,.task-history small{display:block;color:var(--muted);margin-top:3px}
+.project-dashboard-card{padding:20px}
+.project-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:14px 0}
+.project-kpis>div{background:var(--surface2);border-radius:12px;padding:10px}
+.project-kpis small{display:block;color:var(--muted);font-size:9px;letter-spacing:1px}
+.project-kpis strong{display:block;margin-top:5px;font-size:13px}
+.project-progress{margin:12px 0 5px}
+.project-task-list{margin:15px 0}
+.goal-intro{padding:20px;border-radius:18px;background:var(--surface2);margin-bottom:10px}
+.goal-intro h2{margin:6px 0}.goal-intro p{color:var(--muted);margin:0}
+.goal-period-group{margin:8px 0 20px}
+.goal-period-heading{display:flex;align-items:center;justify-content:space-between;margin:12px 0}
+.goal-period-heading h3{margin:0}.goal-period-heading span{font-size:12px;color:var(--muted)}
+.goal-game-card{padding:19px;border-radius:18px;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow)}
+.goal-game-top,.goal-foot,.goal-actions{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.goal-badge{padding:5px 9px;border-radius:999px;background:var(--surface2);font-size:10px;font-weight:800}
+.goal-status{font-size:11px;color:var(--muted)}
+.goal-game-card h3{margin:14px 0 4px;font-size:18px}
+.goal-score{display:flex;align-items:baseline;gap:7px;margin:18px 0 8px}.goal-score strong{font-size:25px}.goal-score span{color:var(--muted);font-size:12px}
+.goal-track{height:11px;background:var(--surface2);border-radius:999px;overflow:hidden}.goal-track i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--green2),#c3a477)}
+.goal-foot{font-size:11px;margin-top:8px;color:var(--muted)}.goal-foot b{color:var(--text)}
+.goal-actions{justify-content:flex-start;margin-top:15px;flex-wrap:wrap}
+.note-card{min-width:0}.note-linked{font-size:11px;color:var(--green2);padding:7px 10px;background:var(--surface2);border-radius:9px;margin:10px 0}
+.note-excerpt{white-space:pre-wrap;line-height:1.55;color:var(--text);max-height:110px;overflow:hidden}
+.palette-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:15px 0}
+.palette-choice{border:1px solid var(--border);background:var(--surface2);color:var(--text);padding:11px;border-radius:12px;text-align:left;cursor:pointer;font:inherit;font-size:12px}
+.palette-choice.active{outline:2px solid var(--green2);border-color:var(--green2)}
+.theme-mode-row{display:flex;gap:8px;flex-wrap:wrap}
+[data-palette="ocean"]{--bg:#edf4f6;--surface:#fff;--surface2:#e3eef1;--text:#203b45;--muted:#66808a;--green:#315f6a;--green2:#477f8b;--line:#d2e1e5}
+[data-theme="dark"][data-palette="ocean"]{--bg:#14262d;--surface:#1d343d;--surface2:#27434d;--text:#e5f0f2;--muted:#a4bbc1;--line:#38545e}
+[data-palette="lavender"]{--bg:#f6f0f7;--surface:#fff;--surface2:#eee4f0;--text:#47394d;--muted:#89788f;--green:#755a7e;--green2:#9a79a5;--line:#e5d8e9}
+[data-theme="dark"][data-palette="lavender"]{--bg:#261f2b;--surface:#342b3a;--surface2:#44364b;--text:#f0e8f2;--muted:#c0aec7;--line:#55445e}
+[data-palette="terracotta"]{--bg:#f8f1e9;--surface:#fff;--surface2:#efe2d4;--text:#4e3b30;--muted:#8b7668;--green:#8a5942;--green2:#b87555;--line:#e8d8c8}
+[data-theme="dark"][data-palette="terracotta"]{--bg:#2b211c;--surface:#3a2d26;--surface2:#4b382f;--text:#f1e6dd;--muted:#c4aa99;--line:#5c4437}
+.month-link{border:0;background:var(--surface2);border-radius:14px;padding:12px}
+@media(max-width:650px){.project-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.palette-options{grid-template-columns:1fr}.task-status-buttons{max-width:220px}}
 </style>
 </head>
 <body>
@@ -333,10 +379,8 @@ input,select,textarea{border-radius:11px}
   <button data-page="tasks"><span class="ico">✓</span>Tasks</button>
   <button data-page="projects"><span class="ico">▤</span>Projects</button>
   <button data-page="goals"><span class="ico">◎</span>Goals</button>
-  <button data-page="planning"><span class="ico">▦</span>My Day & Planning</button>
   <button data-page="budget"><span class="ico">¤</span>Budget</button>
-  <button data-page="documents"><span class="ico">▣</span>Documents</button>
-  <button data-page="reports"><span class="ico">▥</span>Reports</button>
+    <button data-page="reports"><span class="ico">▥</span>Reports</button>
   <button data-page="notes"><span class="ico">✎</span>Notes</button>
   <button data-page="settings"><span class="ico">⚙</span>Settings & Backup</button>
  </nav>
@@ -366,10 +410,10 @@ input,select,textarea{border-radius:11px}
 
   <div class="dashboard-section-title"><div><span class="eyebrow">THE BIG PICTURE</span><h2>Your year, in motion</h2></div><select id="overviewYear" class="year-select"></select></div>
   <div class="grid stats v3-stats">
-   <div class="stat-card stat-forest"><div class="stat-top"><span>Tasks in your orbit</span><span class="stat-symbol">↗</span></div><div class="stat-num" id="statTasks">0</div><div class="stat-foot">All the things you're moving forward</div><div class="stat-accent"></div></div>
-   <div class="stat-card stat-sage"><div class="stat-top"><span>Little wins</span><span class="stat-symbol">✳</span></div><div class="stat-num" id="statDone">0</div><div class="stat-foot">Tasks you've brought to completion</div><div class="stat-accent"></div></div>
-   <div class="stat-card stat-clay"><div class="stat-top"><span>In progress</span><span class="stat-symbol">◒</span></div><div class="stat-num" id="statProjects">0</div><div class="stat-foot">Projects currently underway</div><div class="stat-accent"></div></div>
-   <div class="stat-card stat-linen"><div class="stat-top"><span>Coming up</span><span class="stat-symbol">⌁</span></div><div class="stat-num" id="statEvents">0</div><div class="stat-foot">Events in the next 30 days</div><div class="stat-accent"></div></div>
+   <div class="stat-card stat-forest overview-link" id="overviewTasks" role="button" tabindex="0" aria-label="Open all tasks"><div class="stat-top"><span>Tasks in your orbit</span><span class="stat-symbol">↗</span></div><div class="stat-num" id="statTasks">0</div><div class="stat-foot">All the things you're moving forward</div><div class="stat-accent"></div></div>
+   <div class="stat-card stat-sage overview-link" id="overviewWins" role="button" tabindex="0" aria-label="Open completed tasks"><div class="stat-top"><span>Little wins</span><span class="stat-symbol">✳</span></div><div class="stat-num" id="statDone">0</div><div class="stat-foot">Tasks you've brought to completion</div><div class="stat-accent"></div></div>
+   <div class="stat-card stat-clay overview-link" id="overviewProjects" role="button" tabindex="0" aria-label="Open projects in progress"><div class="stat-top"><span>In progress</span><span class="stat-symbol">◒</span></div><div class="stat-num" id="statProjects">0</div><div class="stat-foot">Projects currently underway</div><div class="stat-accent"></div></div>
+   <div class="stat-card stat-linen overview-link" id="overviewComing" role="button" tabindex="0" aria-label="Open calendar"><div class="stat-top"><span>Coming up</span><span class="stat-symbol">⌁</span></div><div class="stat-num" id="statEvents">0</div><div class="stat-foot">Events in the next 30 days</div><div class="stat-accent"></div></div>
   </div>
 
   <div class="dashboard-main-grid">
@@ -380,10 +424,12 @@ input,select,textarea{border-radius:11px}
      <div class="focus-orb">✦</div><div class="focus-copy"><span class="eyebrow">KEEP YOUR MOMENTUM</span><h3>Your progress is adding up.</h3><p id="progressText">Add your first task to get started.</p></div>
      <div class="focus-meter"><div class="ring" id="progressRing"><span id="progressLabel">0%</span></div><small>COMPLETED</small></div>
     </div>
+    <div class="card myday-overview"><div class="section-head"><div><span class="eyebrow">A SMALL PLAN FOR TODAY</span><h2>My Day</h2><span class="muted" id="todayLabel"></span></div><button class="text-action" data-goto="calendar">View calendar →</button></div><div id="myDayList" class="list"></div></div>
+    <div class="card"><div class="section-head"><div><span class="eyebrow">THIS MONTH</span><h2>Monthly priorities</h2></div><button class="btn primary" data-add="priority">＋ Add priority</button></div><div id="priorityList" class="list"></div></div>
    </div>
    <div class="dashboard-right">
     <div class="surface-panel upcoming-panel"><div class="panel-heading"><div><span class="eyebrow">ON THE HORIZON</span><h2>Coming up</h2></div><button class="text-action" data-goto="calendar">See all <span>→</span></button></div><div class="list" id="upcomingList"></div></div>
-    <div class="daily-nudge"><div class="nudge-mark">“</div><p>Progress is built in the small things you do consistently.</p><span>A GENTLE REMINDER</span></div>
+    <div class="daily-nudge"><div class="nudge-mark">“</div><p id="gentleReminderText">Progress is built in the small things you do consistently.</p><span>A GENTLE REMINDER</span></div>
     <div class="quick-launch">
      <span class="eyebrow">MAKE A LITTLE SPACE</span>
      <button data-add="task"><span class="launch-icon">＋</span><span><strong>Capture a task</strong><small>Get it out of your head</small></span><b>→</b></button>
@@ -405,7 +451,7 @@ input,select,textarea{border-radius:11px}
  <section class="page" id="tasks">
   <div class="card">
    <div class="section-head"><h2>Task manager</h2><button class="btn primary" data-add="task">＋ Add task</button></div>
-   <div class="toolbar"><input id="taskSearch" placeholder="Search tasks…" style="flex:1"><select id="taskFilter" style="width:auto"><option value="all">All tasks</option><option>Not Started</option><option>In Progress</option><option>Pending</option><option>Completed</option></select><select id="taskSort" style="width:auto"><option value="date">Sort: due date</option><option value="priority">Sort: priority</option><option value="title">Sort: title</option></select></div>
+   <div class="toolbar"><input id="taskSearch" placeholder="Search tasks…" style="flex:1"><select id="taskFilter" style="width:auto"><option value="all">All tasks</option><option>Not Started</option><option>In Progress</option><option>On Hold</option><option>Dropped</option><option>Completed</option></select><select id="taskSort" style="width:auto"><option value="date">Sort: due date</option><option value="priority">Sort: priority</option><option value="title">Sort: title</option></select></div>
    <div id="taskList"></div>
   </div>
  </section>
@@ -421,13 +467,7 @@ input,select,textarea{border-radius:11px}
  <section class="page" id="notes">
   <div class="card"><div class="section-head"><h2>Notes & ideas</h2><button class="btn primary" data-add="note">＋ New note</button></div><div id="noteList" class="grid two"></div></div>
  </section>
- <section class="page" id="planning">
-  <div class="grid two">
-   <div class="card"><div class="section-head"><h2>My Day</h2><span class="badge" id="todayLabel"></span></div><div id="myDayList" class="list"></div></div>
-   <div class="card"><div class="section-head"><h2>Quarterly snapshot</h2><select id="quarterSelect" style="width:auto"><option value="0">Q1</option><option value="1">Q2</option><option value="2">Q3</option><option value="3">Q4</option></select></div><div id="quarterSummary"></div></div>
-  </div>
-  <div class="card" style="margin-top:15px"><div class="section-head"><h2>Monthly priorities</h2><button class="btn primary" data-add="priority">＋ Add priority</button></div><div id="priorityList" class="list"></div></div>
- </section>
+ <section class="page" id="planning" hidden><div id="quarterSummary" hidden></div><select id="quarterSelect" hidden><option value="0">Q1</option></select></section>
  <section class="page" id="budget">
   <div class="budget-hero">
    <div><span class="eyebrow">MONEY, WITH MORE CLARITY</span><h2>Give every ringgit<br><em>a little direction.</em></h2><p>Plan allocations, record spending and see where your money goes.</p></div>
@@ -482,11 +522,7 @@ input,select,textarea{border-radius:11px}
    <div id="transactionList"></div>
   </div>
  </section>
- <section class="page" id="documents">
-  <div class="card"><div class="section-head"><h2>Document library</h2><label class="btn primary" for="docUpload">＋ Upload files</label><input id="docUpload" type="file" multiple hidden></div>
-   <div class="toolbar"><input id="docSearch" placeholder="Search documents…" style="flex:1"><select id="docView" style="width:auto"><option value="grid">Grid view</option><option value="list">List view</option></select></div><div id="documentList" class="grid two"></div>
-  </div>
- </section>
+ <section class="page" id="documents" hidden></section>
  <section class="page" id="reports">
   <div class="grid two"><div class="card"><h2 style="margin-top:0">Year-to-date summary</h2><div id="reportSummary"></div></div>
   <div class="card"><h2 style="margin-top:0">Export report</h2><p class="muted">Export tasks and events as a CSV file.</p><button class="btn primary" id="csvExport">↓ Export CSV</button></div></div>
@@ -494,7 +530,11 @@ input,select,textarea{border-radius:11px}
 
  <section class="page" id="settings">
   <div class="grid two">
-   <div class="card"><h2 style="margin-top:0">Appearance</h2><p class="muted">Choose the look that feels comfortable on your tablet.</p><button class="btn" id="lightChoice">☀ Light mode</button> <button class="btn" id="darkChoice">☾ Dark mode</button></div>
+   <div class="card"><h2 style="margin-top:0">Appearance</h2><p class="muted">Choose a colour mood, then switch between light and dark mode.</p>
+    <div class="palette-options">
+     <button class="palette-choice" data-palette="sage">🌿 Sage & cream</button><button class="palette-choice" data-palette="ocean">🌊 Ocean & mist</button><button class="palette-choice" data-palette="lavender">✿ Lavender & blush</button><button class="palette-choice" data-palette="terracotta">☀ Terracotta & sand</button>
+    </div><div class="theme-mode-row"><button class="btn" id="lightChoice">☀ Light mode</button><button class="btn" id="darkChoice">☾ Dark mode</button></div></div>
+   <div class="card"><h2 style="margin-top:0">Gentle reminder</h2><p class="muted">Write a short reminder that will appear on your Overview.</p><div class="field"><label for="gentleReminderInput">Your reminder</label><textarea id="gentleReminderInput" maxlength="240" placeholder="A gentle reminder for yourself…"></textarea></div><button class="btn primary" id="saveGentleReminder" type="button" style="margin-top:10px">Save reminder</button></div>
    <div class="card"><h2 style="margin-top:0">Your data</h2><p class="muted">Your planner saves locally on this device and, after Google sign-in, synchronises planner records to your private Firebase account. Wait for the save/sync confirmation before refreshing. Export a backup regularly.</p><div class="toolbar"><button class="btn primary" id="exportBtn">↓ Export backup</button><label class="btn" for="importFile">↑ Import backup</label><input id="importFile" type="file" accept=".json,application/json" hidden></div><button class="btn danger" id="clearBtn">Clear all planner data</button><div class="storage-panel"><div class="storage-panel-head"><strong>Storage health</strong><button class="btn" type="button" id="checkStorageBtn">Check again</button></div><div id="storageStatus" class="storage-status">Checking browser storage…</div><div id="storageDetails" class="muted storage-details">Storage is kept separately for each website origin and browser profile.</div></div></div>
   </div>
   <div class="card" style="margin-top:15px"><h2 style="margin-top:0">Using your planner</h2><ul class="muted"><li>Use Quick add to create tasks, events, projects, goals, notes, budget allocations, transactions, accounts and loans.</li><li>Use Calendar for dated events and Tasks for actions you need to complete.</li><li>Planner records are stored in IndexedDB where supported. Export a backup before clearing browser data or changing devices. Budget allocations, transactions, accounts and loans are included. Loan repayments are calculated from their transaction history.</li><li>This is an offline-friendly single-file planner. Local records remain available on this device; when signed in, planner records synchronise to your private Firebase account. Uploaded document files remain on this device and are not included in cloud sync.</li><li>If embedded in Google Sites, keep using the same published embed URL, browser and device. Browser storage may be partitioned or restricted inside embedded pages. Export backups regularly; publishing a new URL or clearing site data may make the old local records unavailable.</li></ul></div>
@@ -502,7 +542,7 @@ input,select,textarea{border-radius:11px}
 </main>
 </div>
 <nav class="mobile-nav" id="mobileNav">
- <button class="active" data-page="dashboard"><span>⌂</span>Home</button><button data-page="calendar"><span>▦</span>Calendar</button><button data-page="tasks"><span>✓</span>Tasks</button><button data-page="projects"><span>▤</span>Projects</button><button data-page="goals"><span>◎</span>Goals</button><button data-page="planning"><span>▦</span>My Day</button><button data-page="budget"><span>¤</span>Budget</button><button data-page="documents"><span>▣</span>Files</button><button data-page="reports"><span>▥</span>Reports</button><button data-page="notes"><span>✎</span>Notes</button>
+ <button class="active" data-page="dashboard"><span>⌂</span>Home</button><button data-page="calendar"><span>▦</span>Calendar</button><button data-page="tasks"><span>✓</span>Tasks</button><button data-page="projects"><span>▤</span>Projects</button><button data-page="goals"><span>◎</span>Goals</button><button data-page="budget"><span>¤</span>Budget</button><button data-page="reports"><span>▥</span>Reports</button><button data-page="notes"><span>✎</span>Notes</button>
 </nav>
 <div class="modal-backdrop" id="modalBackdrop">
  <div class="modal v4-modal">
@@ -526,9 +566,11 @@ input,select,textarea{border-radius:11px}
 <script>
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const STORE='yearlyPlannerTablet_v1';
-const EMPTY_DATA=()=>({tasks:[],events:[],projects:[],goals:[],notes:[],priorities:[],expenses:[],transactions:[],accounts:[],loans:[]});
+const EMPTY_DATA=()=>({tasks:[],events:[],projects:[],goals:[],notes:[],priorities:[],expenses:[],transactions:[],accounts:[],loans:[],preferences:{gentleReminder:'Progress is built in the small things you do consistently.'}});
 let data=load(), currentPage='dashboard', calendarDate=new Date(), editing=null, formType=null;
 ['priorities','expenses','transactions','accounts','loans'].forEach(k=>{if(!Array.isArray(data[k]))data[k]=[]});
+if(!data.preferences||typeof data.preferences!=='object')data.preferences={};
+if(typeof data.preferences.gentleReminder!=='string')data.preferences.gentleReminder='Progress is built in the small things you do consistently.';
 function load(){try{return JSON.parse(localStorage.getItem(STORE))||EMPTY_DATA()}catch(e){return EMPTY_DATA()}}
 const APP_DB='YearlyPlannerDocumentStore',APP_DB_VERSION=2;
 function appDB(){return new Promise((resolve,reject)=>{if(!('indexedDB' in window)){reject(new Error('IndexedDB unavailable'));return}const r=indexedDB.open(APP_DB,APP_DB_VERSION);r.onupgradeneeded=()=>{const db=r.result;if(!db.objectStoreNames.contains('files'))db.createObjectStore('files',{keyPath:'id'});if(!db.objectStoreNames.contains('appData'))db.createObjectStore('appData')};r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);r.onblocked=()=>reject(new Error('Database upgrade blocked'))})}
@@ -668,16 +710,42 @@ function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt
 function dateFmt(d){if(!d)return 'No date';return new Date(d+'T00:00:00').toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'})}
 function toast(t){let el=$('#toast');el.textContent=t;el.style.display='block';setTimeout(()=>el.style.display='none',2200)}
 function setTheme(t){document.documentElement.dataset.theme=t;localStorage.setItem('ypTheme',t);$('#themeBtn').textContent=t==='dark'?'☀ Light':'☾ Dark'}
-function navigate(page){currentPage=page;$$('.page').forEach(p=>p.classList.toggle('active',p.id===page));$$('[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===page));let names={dashboard:['Your year at a glance','A calm space to plan, focus and follow through.'],calendar:['Calendar','See your commitments across the year.'],tasks:['Tasks','Turn plans into clear next actions.'],projects:['Projects','Keep related work organised in one place.'],goals:['Annual goals','Give your year direction and measure progress.'],notes:['Notes & ideas','Keep useful thoughts close at hand.'],planning:['My Day & Planning','Your daily agenda and quarterly priorities.'],budget:['Budget','Track accounts, loans, cash flow, allocations and balances.'],documents:['Document Library','Organise important files on this device.'],reports:['Reports & Analytics','Review progress and export records.'],settings:['Settings & backup','Customise your planner and protect your data.']};$('#pageTitle').textContent=names[page][0];$('#pageSubtitle').textContent=names[page][1];}
+function setPalette(p){document.documentElement.dataset.palette=p;localStorage.setItem('ypPalette',p);$$('.palette-choice').forEach(b=>b.classList.toggle('active',b.dataset.palette===p))}
+function navigate(page){currentPage=page;$$('.page').forEach(p=>p.classList.toggle('active',p.id===page));$$('[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===page));let names={dashboard:['Your year at a glance','A calm space to plan, focus and follow through.'],calendar:['Calendar','See your commitments across the year.'],tasks:['Tasks','Turn plans into clear next actions.'],projects:['Projects','Keep related work organised in one place.'],goals:['Annual goals','Give your year direction and measure progress.'],notes:['Notes & ideas','Keep useful thoughts close at hand.'],planning:['My Day','Your daily agenda.'],budget:['Budget','Track accounts, loans, cash flow, allocations and balances.'],documents:['Document Library',''],reports:['Reports & Analytics','Review progress and export records.'],settings:['Settings & backup','Customise your planner and protect your data.']};$('#pageTitle').textContent=names[page][0];$('#pageSubtitle').textContent=names[page][1];}
 $$('[data-page]').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.page)));
 $$('[data-goto]').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.goto)));
+function activateOverviewCard(el,action){
+ if(!el)return;
+ const run=()=>action();
+ el.addEventListener('click',run);
+ el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();run()}});
+}
+activateOverviewCard($('#overviewTasks'),()=>{navigate('tasks');$('#taskFilter').value='all';renderTasks()});
+activateOverviewCard($('#overviewWins'),()=>{navigate('tasks');$('#taskFilter').value='Completed';renderTasks()});
+activateOverviewCard($('#overviewProjects'),()=>navigate('projects'));
+activateOverviewCard($('#overviewComing'),()=>navigate('calendar'));
+$('#monthGrid').addEventListener('click',e=>{
+ const button=e.target.closest('[data-month]');if(!button)return;
+ const year=Number($('#overviewYear').value)||new Date().getFullYear();
+ calendarDate=new Date(year,Number(button.dataset.month),1);
+ navigate('calendar');renderCalendar();
+});
+$('#saveGentleReminder')?.addEventListener('click',async()=>{
+ const value=$('#gentleReminderInput').value.trim();
+ if(!value){toast('Please enter a reminder first');return}
+ data.preferences=data.preferences||{};
+ data.preferences.gentleReminder=value;
+ const ok=await save();
+ if(ok)toast('Gentle reminder updated');
+});
+
 function field(label,name,type='text',value='',opts=[]){let html=`<div class="field ${name==='description'?'full':''}"><label>${label}</label>`;if(type==='select')html+=`<select name="${name}">${opts.map(o=>`<option ${o===value?'selected':''}>${esc(o)}</option>`).join('')}</select>`;else if(type==='textarea')html+=`<textarea name="${name}" placeholder="${label}">${esc(value)}</textarea>`;else html+=`<input name="${name}" type="${type}" value="${esc(value)}" placeholder="${label}" ${type==='number'?'min="0"':''}>`;return html+'</div>'}
 const schemas={
  task:{title:'Task',fields:[['Task title','title'],['Due date','date','date'],['Priority','priority','select','Medium',['Low','Medium','High','Critical']],['Status','status','select','Not Started',['Not Started','In Progress','On Hold','Completed','Dropped']],['Category','category','select','General',['Work','Personal','Admin','Finance','Health','Study','General','Other']],['Related project','projectId','select','',''],['Description (optional)','description','textarea']]},
- event:{title:'Calendar event',fields:[['Event title','title'],['Date','date','date'],['Start time','time','time'],['End time','endTime','time'],['Category','category','select','Personal',['Work','Programme','Meeting','Personal','Deadline','Other']],['Location','location'],['Notes','description','textarea']]},
+ event:{title:'Calendar item',fields:[['Title','title'],['Date','date','date'],['Type','eventType','select','Event',['Meeting','Event','Reminder','Deadline','Personal']],['Start time','time','time'],['End time','endTime','time'],['Location','location'],['Notes','description','textarea']]},
  project:{title:'Project',fields:[['Project name','title'],['Start date','startDate','date'],['Target date','date','date'],['Status','status','select','Planning',['Planning','In Progress','On Hold','Completed']],['Priority','priority','select','Medium',['Low','Medium','High','Critical']],['Budget (RM)','budget','number'],['Description','description','textarea']]},
- goal:{title:'Annual goal',fields:[['Goal title','title'],['Category','category','select','Personal',['Personal','Career','Financial','Learning','Health','Other']],['Target date','date','date'],['Progress (%)','progress','number'],['Status','status','select','In Progress',['Not Started','In Progress','Completed']],['Description','description','textarea']]},
- note:{title:'Note',fields:[['Title','title'],['Category','category'],['Content','description','textarea']]},
+ goal:{title:'Goal',fields:[['Goal title','title'],['Goal cycle','goalPeriod','select','Yearly',['Daily','Weekly','Monthly','Yearly']],['Category','category','select','Personal',['Personal','Career','Financial','Learning','Health','Other']],['Current value','currentValue','number'],['Target value','targetValue','number'],['Unit (e.g. books, RM, sessions)','unit'],['Progress (%)','progress','number'],['Target date','date','date'],['Status','status','select','In Progress',['Not Started','In Progress','Completed']],['Description','description','textarea']]},
+ note:{title:'Note',fields:[['Title','title'],['Category','category','select','General',['General','Meeting minutes','Event notes','Ideas','Personal','Work','Other']],['Link to calendar item','eventId','select','',''],['Content','description','textarea']]},
  priority:{title:'Monthly priority',fields:[['Priority','title'],['Month','month','select',String(new Date().getMonth()),['0','1','2','3','4','5','6','7','8','9','10','11']],['Status','status','select','Not Started',['Not Started','In Progress','Completed']]]},
  expense:{title:'Budget allocation',fields:[['Allocation name','title'],['Category','category','select','General',['General','Groceries','Transport','Housing','Utilities','Health','Shopping','Entertainment','Travel','Savings','Education','Other']],['Allocated amount (RM)','allocation','number'],['Period','period','select','Monthly',['Daily','Weekly','Monthly','Quarterly','Yearly','Custom','One-time']],['Start date','startDate','date',new Date().toISOString().slice(0,10)],['End date','endDate','date'],['Notes','description','textarea']]},
  transaction:{title:'Transaction',fields:[['Type','transactionType','select','Expense',['Expense','Income','Transfer','Loan repayment']],['Description','title'],['Amount (RM)','amount','number'],['Date','date','date',new Date().toISOString().slice(0,10)],['From account','accountId','select','',''],['To account (for transfer)','toAccountId','select','',''],['Category','category','select','General',['General','Groceries','Transport','Housing','Utilities','Health','Shopping','Entertainment','Travel','Savings','Education','Debt repayment','Other']],['Payment method','method','select','Card',['Cash','Card','Bank transfer','E-wallet','Auto debit','Other']],['Related allocation','allocationId','select','',''],['Related loan','loanId','select','',''],['Notes','description','textarea']]},
@@ -692,6 +760,9 @@ async function openForm(type,item=null){
  let fields=schema.fields.map(([label,name,t='text',def='',opts=[]])=>{
    if(name==='projectId'){
      return `<div class="field"><label>${label}</label><select name="projectId"><option value="">No linked project</option>${data.projects.map(x=>`<option value="${esc(x.id)}" ${item?.projectId===x.id?'selected':''}>${esc(x.title)}</option>`).join('')}</select></div>`;
+   }
+   if(name==='eventId'){
+     return `<div class="field"><label>${label}</label><select name="eventId"><option value="">No linked calendar item</option>${data.events.map(x=>`<option value="${esc(x.id)}" ${item?.eventId===x.id?'selected':''}>${esc(x.title)} · ${dateFmt(x.date)} · ${esc(x.eventType||'Event')}</option>`).join('')}</select></div>`;
    }
    if(['allocationId','accountId','toAccountId','loanId'].includes(name)){
      const source=name==='allocationId'?data.expenses:name==='loanId'?data.loans:data.accounts;
@@ -749,9 +820,13 @@ $('#entryForm').addEventListener('submit',async e=>{
   const now=new Date().toISOString(),previous=idx>=0?arr[idx]:null;
   obj.createdAt=previous?.createdAt||now;obj.updatedAt=now;
   obj.statusHistory=Array.isArray(previous?.statusHistory)?previous.statusHistory.slice():[];
+  obj.comments=Array.isArray(previous?.comments)?previous.comments.slice():[];
   const oldStatus=previous?.status||'Not Started',newStatus=obj.status||'Not Started';
   if(previous&&oldStatus!==newStatus)obj.statusHistory.push({from:oldStatus,to:newStatus,at:now});
   if(!previous)obj.statusHistory.push({from:'',to:newStatus,at:now});
+ }
+ if(formType==='note'){
+  const previous=idx>=0?arr[idx]:null;obj.createdAt=previous?.createdAt||new Date().toISOString();obj.updatedAt=new Date().toISOString();
  }
  if(idx>=0)arr[idx]=obj;else arr.push(obj);
  const saved=await save();if(!saved){alert('Your entry could not be saved. Do not refresh or close this page. Export your backup and check Storage Health.');return}closeForm();
@@ -764,8 +839,9 @@ function remove(type,id){
  if(type==='loan'&&(data.transactions||[]).some(t=>t.loanId===id)){toast('This loan has linked repayments. Keep it to preserve history.');return}
  if(!confirm('Delete this item?'))return;let keys={event:'events',task:'tasks',project:'projects',goal:'goals',note:'notes',priority:'priorities',expense:'expenses',transaction:'transactions',account:'accounts',loan:'loans'};let key=keys[type];data[key]=(data[key]||[]).filter(x=>x.id!==id);save();toast('Deleted')}
 function renderDashboard(){const heroNow=new Date();if($('#heroWeekday'))$('#heroWeekday').textContent=heroNow.toLocaleDateString(undefined,{weekday:'long'}).toUpperCase();if($('#heroDate'))$('#heroDate').textContent=heroNow.toLocaleDateString(undefined,{day:'numeric',month:'long',year:'numeric'});let tasks=data.tasks,done=tasks.filter(t=>t.status==='Completed').length;$('#statTasks').textContent=tasks.length;$('#statDone').textContent=done;$('#statProjects').textContent=data.projects.filter(p=>p.status!=='Completed').length;let now=new Date(),end=new Date(now);end.setDate(end.getDate()+30);$('#statEvents').textContent=data.events.filter(e=>e.date&&new Date(e.date+'T23:59:59')>=now&&new Date(e.date+'T00:00:00')<=end).length;let pct=tasks.length?Math.round(done/tasks.length*100):0;$('#progressLabel').textContent=pct+'%';if($('#overallProgress'))$('#overallProgress').style.width=pct+'%';if($('#progressRing'))$('#progressRing').style.background=`conic-gradient(var(--green2) ${pct}%, var(--surface2) 0)`;$('#progressText').textContent=tasks.length?`${done} of ${tasks.length} tasks completed.`:'Add your first task to get started.';
-let year=Number($('#overviewYear').value)||now.getFullYear();$('#monthGrid').innerHTML=Array.from({length:12},(_,i)=>{let count=data.events.filter(e=>e.date&&new Date(e.date+'T00:00:00').getFullYear()===year&&new Date(e.date+'T00:00:00').getMonth()===i).length;let taskCount=data.tasks.filter(t=>t.date&&new Date(t.date+'T00:00:00').getFullYear()===year&&new Date(t.date+'T00:00:00').getMonth()===i&&t.status!=='Completed').length;return `<div class="month"><strong>${new Date(year,i,1).toLocaleDateString(undefined,{month:'long'})}</strong><small>◦ ${count} events</small><small>✓ ${taskCount} open tasks</small></div>`}).join('');
+let year=Number($('#overviewYear').value)||now.getFullYear();$('#monthGrid').innerHTML=Array.from({length:12},(_,i)=>{let count=data.events.filter(e=>e.date&&new Date(e.date+'T00:00:00').getFullYear()===year&&new Date(e.date+'T00:00:00').getMonth()===i).length;let taskCount=data.tasks.filter(t=>t.date&&new Date(t.date+'T00:00:00').getFullYear()===year&&new Date(t.date+'T00:00:00').getMonth()===i&&t.status!=='Completed').length;return `<button type="button" class="month month-link" data-month="${i}" aria-label="Open ${new Date(year,i,1).toLocaleDateString(undefined,{month:'long'})} calendar"><strong>${new Date(year,i,1).toLocaleDateString(undefined,{month:'long'})}</strong><small>◦ ${count} events</small><small>✓ ${taskCount} open tasks</small></button>`}).join('');
 let upcoming=data.events.filter(e=>e.date&&e.date>=now.toISOString().slice(0,10)).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,5);$('#upcomingList').innerHTML=upcoming.length?upcoming.map(e=>`<div class="item"><span class="dot"></span><div class="item-main"><div class="item-title">${esc(e.title)}</div><div class="item-meta">${dateFmt(e.date)} ${e.time?'· '+esc(e.time):''}</div></div></div>`).join(''):'<div class="empty">No upcoming events yet.</div>'}
+const reminder=data.preferences?.gentleReminder||'Progress is built in the small things you do consistently.';if($('#gentleReminderText'))$('#gentleReminderText').textContent=reminder;if($('#gentleReminderInput')&&document.activeElement!==$('#gentleReminderInput'))$('#gentleReminderInput').value=reminder;
 function statusStamp(ts){
  if(!ts)return 'No status changes recorded yet';
  const d=new Date(ts);return d.toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'})+' · '+d.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'});
@@ -777,9 +853,18 @@ function renderTasks(){
  $('#taskList').innerHTML=a.length?`<div class="table-wrap"><table><thead><tr><th>Task</th><th>Due</th><th>Priority</th><th>Status & history</th><th>Actions</th></tr></thead><tbody>${a.map(t=>{
   const history=Array.isArray(t.statusHistory)?t.statusHistory:[];
   const project=(data.projects||[]).find(p=>p.id===t.projectId);
-  return `<tr><td><strong>${esc(t.title)}</strong><div class="muted">${esc(t.category||project?.title||'')}</div></td><td>${dateFmt(t.date)}</td><td><span class="badge ${t.priority==='High'||t.priority==='Critical'?'brown':''}">${esc(t.priority||'—')}</span></td><td><select class="task-status-select" aria-label="Update status for ${esc(t.title)}" onchange="setTaskStatus('${t.id}',this.value)">${['Not Started','In Progress','On Hold','Completed','Dropped'].map(v=>`<option ${v===(t.status||'Not Started')?'selected':''}>${v}</option>`).join('')}</select><div class="task-status-time">${history.length?'Last changed: '+statusStamp(history[history.length-1].at):'Status set: '+(t.createdAt?statusStamp(t.createdAt):'—')}</div>${history.length?`<details class="task-history"><summary>${history.length} status update${history.length===1?'':'s'}</summary><div>${history.slice().reverse().map(h=>`<p><b>${esc(h.to||'')}</b> <span>${statusStamp(h.at)}</span>${h.from?`<small>from ${esc(h.from)}</small>`:''}</p>`).join('')}</div></details>`:''}</td><td><div class="row-actions"><button class="icon-btn" onclick="edit('task','${t.id}')">Edit</button><button class="icon-btn" onclick="remove('task','${t.id}')">×</button></div></td></tr>`;
+  return `<tr><td><strong>${esc(t.title)}</strong><div class="muted">${esc(t.category||project?.title||'')}</div></td><td>${dateFmt(t.date)}</td><td><span class="badge ${t.priority==='High'||t.priority==='Critical'?'brown':''}">${esc(t.priority||'—')}</span></td><td><div class="task-status-buttons">${['Not Started','In Progress','On Hold','Completed','Dropped'].map(v=>`<button type="button" class="status-pill ${v===(t.status||'Not Started')?'selected':''}" onclick="setTaskStatus('${t.id}','${v}')">${v}</button>`).join('')}</div><div class="task-status-time">${history.length?'Last changed: '+statusStamp(history[history.length-1].at):'Status set: '+(t.createdAt?statusStamp(t.createdAt):'—')}</div>${history.length?`<details class="task-history"><summary>${history.length} status update${history.length===1?'':'s'}</summary><div>${history.slice().reverse().map(h=>`<p><b>${esc(h.to||'')}</b> <span>${statusStamp(h.at)}</span>${h.from?`<small>from ${esc(h.from)}</small>`:''}</p>`).join('')}</div></details>`:''}
+  ${t.comments?.length?`<div class="task-latest-comment"><b>Latest update:</b> ${esc(t.comments[t.comments.length-1].text)}<small>${statusStamp(t.comments[t.comments.length-1].at)}</small><details><summary>View all comments (${t.comments.length})</summary>${t.comments.slice().reverse().map(c=>`<p>${esc(c.text)}<small>${statusStamp(c.at)}</small></p>`).join('')}</details></div>`:''}
+  <button class="btn task-comment-btn" type="button" onclick="addTaskComment('${t.id}')">＋ Add update / comment</button></td><td><div class="row-actions"><button class="icon-btn" onclick="edit('task','${t.id}')">Edit</button><button class="icon-btn" onclick="remove('task','${t.id}')">×</button></div></td></tr>`;
  }).join('')}</tbody></table></div>`:'<div class="empty">No tasks found. Add a task to get started.</div>';
 }
+window.addTaskComment=async id=>{
+ const task=data.tasks.find(t=>t.id===id);if(!task)return;
+ const textValue=prompt('Add a progress note or situation update:');if(!textValue||!textValue.trim())return;
+ task.comments=Array.isArray(task.comments)?task.comments:[];
+ task.comments.push({text:textValue.trim(),at:new Date().toISOString()});
+ task.updatedAt=new Date().toISOString();await save();toast('Task update saved with timestamp');
+};
 window.setTaskStatus=(id,status)=>{
  const task=data.tasks.find(t=>t.id===id);if(!task||task.status===status)return;
  const now=new Date().toISOString();task.statusHistory=Array.isArray(task.statusHistory)?task.statusHistory:[];
@@ -787,11 +872,73 @@ window.setTaskStatus=(id,status)=>{
  task.status=status;task.updatedAt=now;save();toast('Task status updated');
 };
 function cards(type,arr,extra=''){let host=$('#'+type+'List');host.innerHTML=arr.length?arr.map(x=>`<div class="card"><div class="section-head"><h2>${esc(x.title)}</h2><div class="row-actions"><button class="icon-btn" onclick="edit('${type}','${x.id}')">Edit</button><button class="icon-btn" onclick="remove('${type}','${x.id}')">×</button></div></div><p class="muted" style="font-size:13px">${esc(x.description||'No description added.')}</p>${extra(x)}</div>`).join(''):'<div class="empty full">Nothing here yet. Add your first one.</div>'}
-function renderProjects(){cards('project',data.projects,x=>`<div class="item-meta">${esc(x.status||'Planning')} · ${x.startDate?'Started '+dateFmt(x.startDate)+' · ':''}Target ${dateFmt(x.date)}</div>${x.budget?`<div class="item-meta">Budget: RM ${Number(x.budget).toLocaleString()}</div>`:''}`)}
-function renderGoals(){cards('goal',data.goals,x=>`<div class="item-meta">${esc(x.category||'')} · ${esc(x.status||'')}</div><div class="progress"><span style="width:${Math.min(100,Math.max(0,Number(x.progress)||0))}%"></span></div><div class="item-meta">${Number(x.progress)||0}% complete · Target ${dateFmt(x.date)}</div>`)}
-function renderNotes(){cards('note',data.notes,x=>`<div class="item-meta">${esc(x.category||'General')} · ${x.updated||'Saved in planner'}</div>`)}
-function renderCalendar(){let y=calendarDate.getFullYear(),m=calendarDate.getMonth();$('#calendarTitle').textContent=calendarDate.toLocaleDateString(undefined,{month:'long',year:'numeric'});let first=new Date(y,m,1),offset=(first.getDay()+6)%7,days=new Date(y,m+1,0).getDate(),today=new Date().toISOString().slice(0,10);let names=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];let html=names.map(n=>`<div class="dayname">${n}</div>`).join('');for(let i=0;i<offset;i++)html+='<div></div>';for(let d=1;d<=days;d++){let ds=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`,events=data.events.filter(e=>e.date===ds);html+=`<div class="day ${ds===today?'today':''}" onclick="openEventForDate('${ds}')"><div class="daynum">${d}</div>${events.slice(0,2).map(e=>`<span class="day-event">${esc(e.title)}</span>`).join('')}${events.length>2?`<small>+${events.length-2} more</small>`:''}</div>`}$('#calendarGrid').innerHTML=html;let list=[...data.events].sort((a,b)=>(a.date||'').localeCompare(b.date||''));$('#eventCount').textContent=list.length+' events';$('#eventList').innerHTML=list.length?list.map(e=>`<div class="item"><span class="dot"></span><div class="item-main"><div class="item-title">${esc(e.title)}</div><div class="item-meta">${dateFmt(e.date)} ${e.time?'· '+esc(e.time):''} ${e.location?'· '+esc(e.location):''}</div></div><div class="row-actions"><button class="icon-btn" onclick="edit('event','${e.id}')">Edit</button><button class="icon-btn" onclick="remove('event','${e.id}')">×</button></div></div>`).join(''):'<div class="empty">No events added yet.</div>'}
-window.openEventForDate=d=>{openForm('event');$('#formFields').querySelector('[name="date"]').value=d}
+function renderProjects(){
+ const host=$('#projectList');
+ host.innerHTML=data.projects.length?data.projects.map(p=>{
+  const linked=data.tasks.filter(t=>t.projectId===p.id),done=linked.filter(t=>t.status==='Completed').length,pct=linked.length?Math.round(done/linked.length*100):0;
+  return `<article class="card project-dashboard-card"><div class="section-head"><div><span class="eyebrow">PROJECT DASHBOARD</span><h2>${esc(p.title)}</h2></div><div class="row-actions"><button class="icon-btn" onclick="edit('project','${p.id}')">Edit</button><button class="icon-btn" onclick="remove('project','${p.id}')">×</button></div></div>
+  <div class="project-kpis"><div><small>STATUS</small><strong>${esc(p.status||'Planning')}</strong></div><div><small>TASKS</small><strong>${linked.length}</strong></div><div><small>COMPLETED</small><strong>${done}</strong></div><div><small>TARGET</small><strong>${dateFmt(p.date)}</strong></div></div>
+  <div class="progress project-progress"><span style="width:${pct}%"></span></div><div class="item-meta">${pct}% task completion ${p.budget?` · Budget RM ${Number(p.budget).toLocaleString()}`:''}</div>
+  ${p.description?`<p class="muted">${esc(p.description)}</p>`:''}
+  <div class="project-task-list"><div class="section-head"><strong>What's on this project's plate</strong><button class="text-action" onclick="navigate('tasks')">Open tasks →</button></div>
+  ${linked.length?linked.map(t=>`<div class="item"><span class="dot"></span><div class="item-main"><strong>${esc(t.title)}</strong><div class="item-meta">${esc(t.status||'Not Started')} · ${dateFmt(t.date)}</div></div><button class="icon-btn" onclick="edit('task','${t.id}')">Open</button></div>`).join(''):'<div class="empty">No tasks linked yet. Edit a task and select this project to add it here.</div>'}</div>
+  <button class="btn primary" type="button" onclick="openForm('task').then(()=>{const s=$('#formFields [name=projectId]');if(s)s.value='${p.id}'})">＋ Add task to project</button></article>`;
+ }).join(''):'<div class="empty full">Create a project to see its dashboard, linked tasks and progress here.</div>';
+}
+function renderGoals(){
+ const host=$('#goalList'),periods=['Daily','Weekly','Monthly','Yearly'];
+ const pctOf=g=>{if(Number(g.targetValue)>0)return Math.min(100,Math.max(0,Number(g.currentValue||0)/Number(g.targetValue)*100));return Math.min(100,Math.max(0,Number(g.progress)||0))};
+ host.innerHTML=`<div class="goal-intro full"><span class="eyebrow">YOUR NEXT LEVEL</span><h2>Small steps. Real progress.</h2><p>Choose a rhythm, set a target and celebrate every milestone.</p></div>`+periods.map(period=>{
+  const list=data.goals.filter(g=>(g.goalPeriod||'Yearly')===period);
+  return `<section class="goal-period-group full"><div class="goal-period-heading"><h3>${period} goals</h3><span>${list.length} goal${list.length===1?'':'s'}</span></div><div class="grid two">${list.length?list.map(g=>{
+   const pct=pctOf(g),remaining=Math.max(0,Number(g.targetValue||0)-Number(g.currentValue||0));
+   return `<article class="goal-game-card"><div class="goal-game-top"><span class="goal-badge">${period}</span><span class="goal-status">${esc(g.status||'In Progress')}</span></div><h3>${esc(g.title)}</h3><p class="muted">${esc(g.category||'Personal')} · Target ${dateFmt(g.date)}</p>
+   <div class="goal-score"><strong>${Number(g.currentValue||0).toLocaleString()}${g.unit?' '+esc(g.unit):''}</strong><span>of ${Number(g.targetValue||0).toLocaleString()}${g.unit?' '+esc(g.unit):''}</span></div>
+   <div class="goal-track"><i style="width:${pct}%"></i></div><div class="goal-foot"><b>${Math.round(pct)}% achieved</b><span>${g.targetValue?remaining.toLocaleString()+' to go':'Set a target to track progress'}</span></div>
+   ${g.description?`<p class="muted">${esc(g.description)}</p>`:''}
+   <div class="goal-actions"><button class="btn primary" onclick="updateGoalProgress('${g.id}')">＋ Log progress</button><button class="icon-btn" onclick="edit('goal','${g.id}')">Edit</button><button class="icon-btn" onclick="remove('goal','${g.id}')">×</button></div></article>`;
+  }).join(''):'<div class="empty">No goals in this cycle yet. Add one and start your streak.</div>'}</div></section>`;
+ }).join('');
+}
+window.updateGoalProgress=async id=>{
+ const g=data.goals.find(x=>x.id===id);if(!g)return;
+ const v=prompt('Enter your current progress'+(g.unit?' ('+g.unit+')':'')+':',String(g.currentValue||0));if(v===null)return;
+ const n=Number(v);if(!Number.isFinite(n)||n<0){toast('Enter a valid non-negative number');return}
+ g.currentValue=n;if(Number(g.targetValue)>0)g.progress=Math.min(100,Math.round(n/Number(g.targetValue)*100));
+ if(g.progress>=100)g.status='Completed';else if(g.status==='Not Started')g.status='In Progress';
+ await save();toast('Goal progress updated');
+};
+function renderNotes(){
+ const host=$('#noteList');
+ host.innerHTML=data.notes.length?data.notes.slice().sort((a,b)=>(b.updatedAt||'').localeCompare(a.updatedAt||'')).map(n=>{
+  const linked=data.events.find(e=>e.id===n.eventId);
+  return `<article class="card note-card"><div class="section-head"><div><span class="eyebrow">${esc(n.category||'GENERAL')}</span><h2>${esc(n.title||'Untitled note')}</h2></div><div class="row-actions"><button class="icon-btn" onclick="previewNote('${n.id}')">Preview</button><button class="icon-btn" onclick="edit('note','${n.id}')">Edit</button><button class="icon-btn" onclick="downloadNote('${n.id}')">↓</button><button class="icon-btn" onclick="remove('note','${n.id}')">×</button></div></div>
+  ${linked?`<div class="note-linked">↗ ${esc(linked.title)} · ${dateFmt(linked.date)}</div>`:'<div class="note-linked">Not linked to a calendar item</div>'}
+  <p class="note-excerpt">${esc((n.description||'').slice(0,220))}${(n.description||'').length>220?'…':''}</p><small class="muted">Updated ${n.updatedAt?statusStamp(n.updatedAt):'—'}</small></article>`;
+ }).join(''):'<div class="empty full">Your notes will appear here. Create separate notes for each meeting, event or idea.</div>';
+}
+window.previewNote=id=>{
+ const n=data.notes.find(x=>x.id===id);if(!n)return;
+ const linked=data.events.find(e=>e.id===n.eventId);
+ alert((n.title||'Untitled note')+'\n'+(linked?'Linked to: '+linked.title+' ('+dateFmt(linked.date)+')\n':'')+'\n'+(n.description||''));
+};
+window.downloadNote=id=>{
+ const n=data.notes.find(x=>x.id===id);if(!n)return;
+ const linked=data.events.find(e=>e.id===n.eventId);
+ const body=[n.title||'Untitled note',n.category||'General',linked?'Linked to: '+linked.title+' · '+dateFmt(linked.date):'', '',n.description||''].join('\n');
+ const blob=new Blob([body],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');
+ a.href=URL.createObjectURL(blob);a.download=(n.title||'planner-note').replace(/[^a-z0-9-_ ]/gi,'').trim().replace(/\s+/g,'-')+'.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+};
+function renderCalendar(){let y=calendarDate.getFullYear(),m=calendarDate.getMonth();$('#calendarTitle').textContent=calendarDate.toLocaleDateString(undefined,{month:'long',year:'numeric'});let first=new Date(y,m,1),offset=(first.getDay()+6)%7,days=new Date(y,m+1,0).getDate(),today=new Date().toISOString().slice(0,10);let names=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];let html=names.map(n=>`<div class="dayname">${n}</div>`).join('');for(let i=0;i<offset;i++)html+='<div></div>';for(let d=1;d<=days;d++){let ds=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`,events=data.events.filter(e=>e.date===ds);html+=`<div class="day ${ds===today?'today':''}" onclick="openEventForDate('${ds}')"><div class="daynum">${d}</div>${events.slice(0,2).map(e=>`<span class="day-event">${esc(e.title)}</span>`).join('')}${events.length>2?`<small>+${events.length-2} more</small>`:''}</div>`}$('#calendarGrid').innerHTML=html;let list=[...data.events].sort((a,b)=>(a.date||'').localeCompare(b.date||''));$('#eventCount').textContent=list.length+' events';$('#eventList').innerHTML=list.length?list.map(e=>`<div class="item"><span class="dot"></span><div class="item-main"><div class="item-title">${esc(e.title)}</div><div class="item-meta">${dateFmt(e.date)} · ${esc(e.eventType||'Event')} ${e.time?'· '+esc(e.time):''} ${e.location?'· '+esc(e.location):''}</div></div><div class="row-actions"><button class="icon-btn" onclick="edit('event','${e.id}')">Edit</button><button class="icon-btn" onclick="remove('event','${e.id}')">×</button></div></div>`).join(''):'<div class="empty">No events added yet.</div>'}
+window.openEventForDate=d=>{
+ showQuickAdd();
+ $('#modalEyebrow').textContent='ADD TO '+dateFmt(d).toUpperCase();
+ $('#modalTitle').textContent='What would you like to add?';
+ $$('#quickChoices [data-choice]').forEach(b=>b.hidden=!['task','event'].includes(b.dataset.choice));
+ $('#quickChoices').querySelectorAll('[data-choice="task"],[data-choice="event"]').forEach(b=>{
+  b.onclick=()=>{const type=b.dataset.choice;openForm(type).then(()=>{const date=$('#formFields [name="date"]');if(date)date.value=d;if(type==='event'){const t=$('#formFields [name="eventType"]');if(t)t.value='Event'}})};
+ });
+};
 
 function renderPlanning(){
  const now=new Date(),today=now.toISOString().slice(0,10);
@@ -952,11 +1099,11 @@ $('#budgetPeriod').addEventListener('change',()=>{let custom=$('#budgetPeriod').
 $('#docSearch').addEventListener('input',renderDocuments);$('#docView').addEventListener('change',renderDocuments);$('#quarterSelect').addEventListener('change',renderPlanning);
 $('#csvExport').onclick=()=>{const rows=[['Type','Title','Date','Status','Priority'],...data.tasks.map(x=>['Task',x.title,x.date,x.status,x.priority]),...data.events.map(x=>['Event',x.title,x.date,'',''])];const csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='yearly-planner-report.csv';a.click();URL.revokeObjectURL(a.href)};
 
-function renderAll(){renderDashboard();renderTasks();renderProjects();renderGoals();renderNotes();renderCalendar();renderPlanning();renderBudget();renderReports();renderDocuments()}
+function renderAll(){renderDashboard();renderTasks();renderProjects();renderGoals();renderNotes();renderCalendar();renderPlanning();renderBudget();renderReports()}
 $('#taskSearch').addEventListener('input',renderTasks);$('#taskFilter').addEventListener('change',renderTasks);$('#taskSort').addEventListener('change',renderTasks);
 $('#prevMonth').onclick=()=>{calendarDate.setMonth(calendarDate.getMonth()-1);renderCalendar()};$('#nextMonth').onclick=()=>{calendarDate.setMonth(calendarDate.getMonth()+1);renderCalendar()};
 let yr=$('#overviewYear');for(let y=new Date().getFullYear()-2;y<=new Date().getFullYear()+5;y++)yr.add(new Option(y,y));yr.value=new Date().getFullYear();yr.onchange=renderDashboard;
-$('#themeBtn').onclick=()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');$('#lightChoice').onclick=()=>setTheme('light');$('#darkChoice').onclick=()=>setTheme('dark');$('#checkStorageBtn').onclick=updateStorageInfo;
+$('#themeBtn').onclick=()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');$('#lightChoice').onclick=()=>setTheme('light');$('#darkChoice').onclick=()=>setTheme('dark');$$('.palette-choice').forEach(b=>b.onclick=()=>setPalette(b.dataset.palette));$('#checkStorageBtn').onclick=updateStorageInfo;
 $('#exportBtn').onclick=()=>{let blob=new Blob([JSON.stringify({version:5.5,exported:new Date().toISOString(),data},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='yearly-planner-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href);toast('Backup exported')};
 $('#importFile').onchange=async e=>{
  const file=e.target.files?.[0];if(!file)return;
@@ -1004,7 +1151,7 @@ window.__yearlyPlannerBridge = {
  exportBackup:()=>$('#exportBtn')?.click()
 };
 
-setTheme(localStorage.getItem('ypTheme')||'light');renderAll();window.plannerStorageReady=initialiseStorage();
+setTheme(localStorage.getItem('ypTheme')||'light');setPalette(localStorage.getItem('ypPalette')||'sage');renderAll();window.plannerStorageReady=initialiseStorage();
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')updateStorageInfo()});
 
 </script>
